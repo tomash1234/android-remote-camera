@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">RemoteCamera</string>
+    <string name="Rotation">Device rotation</string>
+    <string name="DeviceAddress">Device address</string>
+</resources>
