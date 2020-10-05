@@ -3,6 +3,7 @@ package cz.tobb.remotecamera;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.camera.core.CameraX;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageProxy;
 import androidx.fragment.app.FragmentTransaction;
@@ -21,7 +22,8 @@ import java.util.concurrent.Executors;
 
 import androidx.fragment.app.Fragment;
 
-public class MainActivity extends AppCompatActivity implements SensorEventListener {
+public class MainActivity extends AppCompatActivity implements SensorEventListener, ServerListener {
+
 
     private OverviewFragment overviewFragment;
     private ImageCapture imageCapture;
@@ -34,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private final float[] orientationAngles = new float[3];
 
     private Executor cameraExecutor;
+    private CommunicationManager communicationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,13 +48,22 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         showFragment(overviewFragment);
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        /*
         imageCapture  = new ImageCapture.Builder()
                         .setTargetRotation(Surface.ROTATION_0)
                         .setCaptureMode(ImageCapture.CaptureMode.MINIMIZE_LATENCY)
                         .build();
-        cameraExecutor = Executors.newSingleThreadExecutor();
+        cameraExecutor = Executors.newSingleThreadExecutor();*/
+
+        communicationManager = new CommunicationManager(this, CommunicationManager.PORT);
+
     }
 
+    @Override
+    protected void onDestroy() {
+        communicationManager.stop();
+        super.onDestroy();
+    }
 
     private void showFragment(Fragment fragment){
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -123,5 +135,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             }
         });
+    }
+
+
+
+    @Override
+    public void requestData() {
+
     }
 }

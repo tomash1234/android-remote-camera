@@ -13,6 +13,8 @@ import androidx.fragment.app.Fragment;
 public class OverviewFragment extends Fragment {
 
     private TextView tvRotation;
+    private TextView tvAddress;
+    private String localAddress;
 
     @Nullable
     @Override
@@ -20,7 +22,10 @@ public class OverviewFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_overview, null);
 
         tvRotation = view.findViewById(R.id.tv_rotation);
+        tvAddress = view.findViewById(R.id.tv_address);
 
+        localAddress = Utils.getIPAddress(true);
+        tvAddress.setText(localAddress + ":" + CommunicationManager.PORT);
         return view;
     }
 
