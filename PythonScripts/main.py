@@ -8,11 +8,19 @@ import numpy as np
 
 COMMAND_GET = 50
 
-SERVER_ADDRESS = "192.168.14.173"
+SERVER_ADDRESS = "192.168.1.113"
 PORT = 6660
 MSGLEN = 4
+ROT_LEN = 6
 
 def myreceive(sock):
+    #rotation
+    rec = sock.recv(ROT_LEN)
+    rot_x = rec[0]*256 + rec[1] - 180
+    rot_y = rec[2]*256 + rec[3] - 180
+    rot_z = rec[4]*256 + rec[5] - 180
+    print('Camera rotation x:', str(rot_x) + '° y:', str(rot_y) + '° z:', str(rot_z) + '°')
+    
     rec = sock.recv(MSGLEN)
     width = rec[0]*256 + rec[1]
     height = rec[2]*256 + rec[3]
@@ -35,6 +43,7 @@ def createImage(width, height, data):
     new_image = Image.fromarray(array)
     imgplot = plt.imshow(new_image)
     plt.show()
+    new_image.save("out.jpg")
 
 
 

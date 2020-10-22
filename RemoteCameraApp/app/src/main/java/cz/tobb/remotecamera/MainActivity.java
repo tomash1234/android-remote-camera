@@ -154,7 +154,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         SensorManager.getRotationMatrix(rotationMatrix, null,
                 accelerometerReading, magnetometerReading);
 
-        final float[] orientationAngles = new float[3];
         SensorManager.getOrientation(rotationMatrix, orientationAngles);
 
         overviewFragment.updateRotation(orientationAngles[0], orientationAngles[1], orientationAngles[2]);
@@ -203,14 +202,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         ImageAnalysis imageAnalysis = new ImageAnalysis.Builder()
                 .build();
 
-        ImageCapture.Builder builder = new ImageCapture.Builder().setTargetResolution(new Size(640, 480));
+        ImageCapture.Builder builder = new ImageCapture.Builder().setTargetResolution(new Size(1080, 1920));
 
-        //Vendor-Extensions (The CameraX extensions dependency in build.gradle)
         HdrImageCaptureExtender hdrImageCaptureExtender = HdrImageCaptureExtender.create(builder);
 
-        // Query if extension is available (optional).
         if (hdrImageCaptureExtender.isExtensionAvailable(cameraSelector)) {
-            // Enable the extension if available.
             hdrImageCaptureExtender.enableExtension(cameraSelector);
         }
 
@@ -228,7 +224,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         imageCapture.takePicture(outputFileOptions, cameraExecutor, new ImageCapture.OnImageSavedCallback () {
             @Override
             public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
-                communicationManager.sendImage(file);
+                communicationManager.sendImage(file, orientationAngles);
             }
 
             @Override

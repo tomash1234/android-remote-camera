@@ -24,6 +24,7 @@ public class CommunicationManager {
     public static final int PORT = 6660;
 
     private volatile Bitmap bitmapToSend;
+    private volatile int[] rotationAngles;
 
     public CommunicationManager(ServerListener serverListener, final int port) {
         this.serverListener = serverListener;
@@ -86,6 +87,15 @@ public class CommunicationManager {
                 (byte)(width/ 256),  (byte) (width % 256),
                 (byte)(height / 256),  (byte) (height % 256)
         };
+
+        int x = rotationAngles[0] + 180;
+        int y = rotationAngles[1] + 180;
+        int z = rotationAngles[2] + 180;
+        byte[] byteRotations = new byte[]{
+                (byte)(x/ 256),  (byte) (x % 256),
+                (byte)(y / 256),  (byte) (y % 256),
+                (byte)(z / 256),  (byte) (z % 256)
+        };
         byte[] data = new byte[width * height * IMAGE_CHANNELS];
         for (int i = 0; i < height; i++){
             for(int j = 0; j < width; j++){
@@ -98,15 +108,23 @@ public class CommunicationManager {
                 }
             }
         }
+        System.out.println("SERVER: rotation angles " + Arrays.toString(rotationAngles));
+        outputStream.write(byteRotations);
         System.out.println("SERVER: header info");
         outputStream.write(byteDimensions);
         System.out.println("SERVER: Data " + data.length);
         outputStream.write(data);
+
     }
 
-    public void sendImage(File file) {
+    public void sendImage(File file, float[] rotationAngles) {
         bitmapToSend = BitmapFactory.decodeFile(file.getAbsolutePath());
-        bitmapToSend = Bitmap.createScaledBitmap(bitmapToSend, bitmapToSend.getWidth() / 4, bitmapToSend.getHeight() / 4, true);
+        bitmapToSend = Bitmap.createScaledBitmap(bitmapToSend, bitmapToSend.getWidth(), bitmapToSend.getHeight(), true);
+
+        this.rotationAngles = new int[3];
+        this.rotationAngles[0] = (int) Math.toDegrees(rotationAngles[0]);
+        this.rotationAngles[1] = (int) Math.toDegrees(rotationAngles[1]);
+        this.rotationAngles[2] = (int) Math.toDegrees(rotationAngles[2]);
         synchronized (this){
             this.notify();
         }
