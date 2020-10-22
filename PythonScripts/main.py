@@ -38,7 +38,6 @@ def myreceive(sock):
 def createImage(width, height, data):
     array = np.array(data, dtype=np.uint8)
     array = np.reshape(array, (height, width, 3))
-    print(array.shape)
 
     new_image = Image.fromarray(array)
     imgplot = plt.imshow(new_image)
